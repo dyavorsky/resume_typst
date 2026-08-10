@@ -65,13 +65,14 @@
 // Section titles carry NO icons — tried and removed by request. The contact row in
 // the sidebar keeps its icons.
 //
-// Worth keeping if they are ever reinstated: use CODEPOINTS, not names, and not
-// `fa-icon`. fontawesome 0.6.0 resolves names against Font Awesome 7's table while
-// Quarto bundles FA 6, so most names silently land on the wrong glyph —
-// `screwdriver-wrench` rendered as the literal text "ɔy", `user` as a superscript
-// 5, `graduation-cap` as a blank card. Writing e.g. `\u{f0b1}` (briefcase) into
-// "Font Awesome 6 Free" at weight 900 is exact. The contact icons survive `fa-icon`
-// only because their codepoints happen to be stable across FA 6/7.
+// Worth keeping if they are ever reinstated: names are safe to use again. The
+// wrong-glyph problem recorded here — `screwdriver-wrench` rendering as the literal
+// text "ɔy", `user` as a superscript 5, `graduation-cap` as a blank card — came
+// from fontawesome 0.6.0 resolving names against Font Awesome 7's table while
+// Quarto bundles FA 6. `fa-version("6")` inside `resume()` now pins both the table
+// and the font family, so names and codepoints agree. Writing a codepoint directly,
+// e.g. `\u{f0b1}` (briefcase) into "Font Awesome 6 Free" at weight 900, still works
+// and is still the most literal option.
 
 
 /// Helpers
@@ -411,7 +412,10 @@
 /// Right section for the justified headers
 /// - body (content): The body of the right header
 #let secondary-right-header(body) = {
-  set text(size: 11pt, weight: "medium")
+  // LOCAL EDIT: upstream 11pt, matching the level-2 heading on the left of the
+  // same row. Dropped a half point so the date range sits just under the
+  // organization name rather than competing with it.
+  set text(size: 10.5pt, weight: "medium")
   body
 }
 
@@ -519,18 +523,46 @@
     body
   }
 
-  // LOCAL EDIT: upstream 11pt. This is the document body size and the main knob
-  // for overall density. It used to be overridden by a `set text(size: 10pt)` at
-  // the top of resume.qmd, which reached only text that had no explicit size of its
-  // own — so most of the document ignored it. Setting it here instead means one
-  // value governs the body, and `resume-item` now inherits it (see below).
+  // LOCAL EDIT: upstream 11pt, then 10pt, now 9.5pt. This is the document body
+  // size and the main knob for overall density. It used to be overridden by a
+  // `set text(size: 10pt)` at the top of resume.qmd, which reached only text that
+  // had no explicit size of its own — so most of the document ignored it. Setting
+  // it here instead means one value governs the body, and `resume-item` now
+  // inherits it (see below).
+  //
+  // Note this now EQUALS the level-3 heading size (9.5pt), so a job title and the
+  // bullets under it are the same size and separate on style and weight alone.
   set text(
     font: font,
     lang: language,
-    size: 10pt,
+    size: 9.5pt,
     fill: color-darkgray,
     fallback: true,
   )
+
+  // LOCAL EDIT (addition): pin fontawesome to Font Awesome 6.
+  //
+  // fontawesome 0.6.0 defaults to version "7". That makes it request the font
+  // families "Font Awesome 7 Free" / "Font Awesome 7 Brands" AND resolve icon
+  // names against FA 7's table. Quarto ships FA *6* (see
+  // share/formats/typst/fonts/) and passes only that directory to Typst, so every
+  // icon fell back to the body font and rendered as an empty box — the cause of
+  // the missing contact icons in the sidebar.
+  //
+  // Pinning to "6" fixes both halves together: the family names now match the
+  // fonts Quarto actually provides, and the name -> codepoint map is FA 6's, which
+  // is the drift described in the note near the top of this file.
+  //
+  // Must be a call in the DOCUMENT FLOW, not a top-level statement — a state
+  // update at the top level of an imported module is discarded. It sits here,
+  // ahead of the sidebar and header, so their `.get()` sees "6".
+  //
+  // The alternative is vendoring the FA 7 otfs into the repo and pointing
+  // `font-paths` at them; this was chosen instead because it adds no binaries and
+  // needs no font installed on the rendering machine. The cost is that it breaks
+  // if Quarto ever bundles a different FA version — the warning to watch for is
+  // "unknown font family: font awesome 6 free".
+  fa-version("6")
 
   // ---- LOCAL EDIT (addition): the right sidebar ------------------------------
   //
@@ -819,7 +851,15 @@
   set par(leading: 0.65em)
   // LOCAL EDIT: upstream left Typst's default round `•`. U+2023 TRIANGULAR
   // BULLET. Revert by deleting this line.
-  set list(marker: [‣])
+  //
+  // `spacing` is the gap BETWEEN bullets, as distinct from the `leading` above,
+  // which is the gap between the wrapped lines WITHIN one bullet. It has to be set
+  // explicitly: the bullets come from Markdown with no blank lines between them,
+  // so Typst treats the list as tight, and a tight list's default `auto` spacing
+  // resolves to `leading` — which is why bullets used to sit exactly as close to
+  // each other as their own wrapped lines did. Keep this above `leading` or the
+  // separation between bullets disappears again.
+  set list(marker: [‣], spacing: 0.95em)
   block(above: 0.5em)[
     #body
   ]
@@ -889,7 +929,11 @@
 )[
   #pad[
     #justified-header(organization, date)
-    #secondary-justified-header(title, location)
+    // Italic on BOTH halves of the second row, applied here rather than in
+    // `secondary-justified-header`: that helper is shared with `resume-entry`,
+    // where the second row is a description and should stay upright. Wrapping the
+    // arguments keeps the italic to job entries only.
+    #secondary-justified-header(emph(title), emph(location))
   ]
 ]
 

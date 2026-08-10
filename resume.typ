@@ -1,38 +1,8 @@
-// Simple numbering for non-book documents
-#let equation-numbering = "(1)"
-#let callout-numbering = "1"
-#let subfloat-numbering(n-super, subfloat-idx) = {
-  numbering("1a", n-super, subfloat-idx)
-}
-
-// Theorem configuration for theorion
-// Simple numbering for non-book documents (no heading inheritance)
-#let theorem-inherited-levels = 0
-
-// Theorem numbering format (can be overridden by extensions for appendix support)
-// This function returns the numbering pattern to use
-#let theorem-numbering(loc) = "1.1"
-
-// Default theorem render function
-#let theorem-render(prefix: none, title: "", full-title: auto, body) = {
-  if full-title != "" and full-title != auto and full-title != none {
-    strong[#full-title.]
-    h(0.5em)
-  }
-  body
-}
 // Some definitions presupposed by pandoc's typst output.
-#let content-to-string(content) = {
-  if content.has("text") {
-    content.text
-  } else if content.has("children") {
-    content.children.map(content-to-string).join("")
-  } else if content.has("body") {
-    content-to-string(content.body)
-  } else if content == [ ] {
-    " "
-  }
-}
+#let blockquote(body) = [
+  #set text( size: 0.92em )
+  #block(inset: (left: 1.5em, top: 0.2em, bottom: 0.2em))[#body]
+]
 
 #let horizontalrule = line(start: (25%,0%), end: (75%,0%))
 
@@ -40,10 +10,14 @@
   #stack(dir: ltr, spacing: 3pt, super[#num], contents)
 ]
 
-#show terms.item: it => block(breakable: false)[
-  #text(weight: "bold")[#it.term]
-  #block(inset: (left: 1.5em, top: -0.4em))[#it.description]
-]
+#show terms: it => {
+  it.children
+    .map(child => [
+      #strong[#child.term]
+      #block(inset: (left: 1.5em, top: -0.4em))[#child.description]
+      ])
+    .join()
+}
 
 // Some quarto-specific definitions.
 
@@ -55,14 +29,15 @@
   )
 
 #let block_with_new_content(old_block, new_content) = {
+  let d = (:)
   let fields = old_block.fields()
-  let _ = fields.remove("body")
+  fields.remove("body")
   if fields.at("below", default: none) != none {
     // TODO: this is a hack because below is a "synthesized element"
     // according to the experts in the typst discord...
     fields.below = fields.below.abs
   }
-  block.with(..fields)(new_content)
+  return block.with(..fields)(new_content)
 }
 
 #let empty(v) = {
@@ -94,6 +69,7 @@
   label: none,
   supplement: str,
   position: none,
+  subrefnumbering: "1a",
   subcapnumbering: "(a)",
   body,
 ) = {
@@ -106,19 +82,16 @@
       supplement: supplement,
       caption: caption,
       {
-        show figure.where(kind: kind): set figure(numbering: _ => {
-          let subfloat-idx = quartosubfloatcounter.get().first() + 1
-          subfloat-numbering(n-super, subfloat-idx)
-        })
+        show figure.where(kind: kind): set figure(numbering: _ => numbering(subrefnumbering, n-super, quartosubfloatcounter.get().first() + 1))
         show figure.where(kind: kind): set figure.caption(position: position)
 
         show figure: it => {
           let num = numbering(subcapnumbering, n-super, quartosubfloatcounter.get().first() + 1)
-          show figure.caption: it => block({
+          show figure.caption: it => {
             num.slice(2) // I don't understand why the numbering contains output that it really shouldn't, but this fixes it shrug?
             [ ]
             it.body
-          })
+          }
 
           quartosubfloatcounter.step()
           it
@@ -149,36 +122,26 @@
   // when we cleanup pandoc's emitted code to avoid spaces this will have to change
   let old_callout = it.body.children.at(1).body.children.at(1)
   let old_title_block = old_callout.body.children.at(0)
-  let children = old_title_block.body.body.children
-  let old_title = if children.len() == 1 {
-    children.at(0)  // no icon: title at index 0
-  } else {
-    children.at(1)  // with icon: title at index 1
-  }
+  let old_title = old_title_block.body.body.children.at(2)
 
   // TODO use custom separator if available
-  // Use the figure's counter display which handles chapter-based numbering
-  // (when numbering is a function that includes the heading counter)
-  let callout_num = it.counter.display(it.numbering)
   let new_title = if empty(old_title) {
-    [#kind #callout_num]
+    [#kind #it.counter.display()]
   } else {
-    [#kind #callout_num: #old_title]
+    [#kind #it.counter.display(): #old_title]
   }
 
   let new_title_block = block_with_new_content(
-    old_title_block,
+    old_title_block, 
     block_with_new_content(
-      old_title_block.body,
-      if children.len() == 1 {
-        new_title  // no icon: just the title
-      } else {
-        children.at(0) + new_title  // with icon: preserve icon block + new title
-      }))
+      old_title_block.body, 
+      old_title_block.body.body.children.at(0) +
+      old_title_block.body.body.children.at(1) +
+      new_title))
 
-  align(left, block_with_new_content(old_callout,
+  block_with_new_content(old_callout,
     block(below: 0pt, new_title_block) +
-    old_callout.body.children.at(1)))
+    old_callout.body.children.at(1))
 }
 
 // 2023-10-09: #fa-icon("fa-info") is not working, so we'll eval "#fa-info()" instead
@@ -194,9 +157,9 @@
       width: 100%, 
       below: 0pt, 
       block(
-        fill: background_color,
-        width: 100%,
-        inset: 8pt)[#if icon != none [#text(icon_color, weight: 900)[#icon] ]#title]) +
+        fill: background_color, 
+        width: 100%, 
+        inset: 8pt)[#text(icon_color, weight: 900)[#icon] #title]) +
       if(body != []){
         block(
           inset: 1pt, 
@@ -205,8 +168,6 @@
       }
     )
 }
-
-
 
 // Quarto partial override: replaces the default `article` template definition.
 //
@@ -225,9 +186,6 @@
 // not be edited there in any durable way. The local copy is editable and
 // committed. See modern-cv/README-VENDORED.md for what was changed and why.
 #import "modern-cv/lib.typ": *
-#let brand-color = (:)
-#let brand-color-background = (:)
-#let brand-logo = (:)
 
 // Quarto partial override: intentionally empty.
 //
@@ -292,21 +250,38 @@
   // body text. The contact icons are separate `#let` constants fixed at
   // rgb("#131A28") and stay near-black regardless.
   accent-color: rgb("#333333"),
-  // Avenir — a geometric sans, rounder and wider than the grotesques this template
-  // shipped with (Source Sans 3, then Fira Sans).
+  // Segoe UI preferred, Avenir as the fallback. Both are humanist/geometric sans
+  // faces, rounder and wider than the grotesques this template shipped with
+  // (Source Sans 3, then Fira Sans).
   //
-  // Must be named exactly "Avenir". The installed faces are Light / Book / Roman /
-  // Medium / Heavy / Black, and Typst groups them into one family under that name,
-  // giving a real bold at 700 despite there being no face literally called Bold.
-  // "Avenir Book" is registered as a SEPARATE family that ignores `weight:`
-  // entirely — every weight renders identically — so it must not be named here.
+  // These two are PLATFORM-SPLIT, and Typst picks per machine with no way to force
+  // the choice: Segoe UI is a Windows system font and is not on macOS (Office for
+  // Mac does not install it), while Avenir is a macOS system font absent from
+  // Windows. So a Windows render gets Segoe UI and a Mac render gets Avenir — the
+  // order here decides only which one wins where BOTH are present, which in
+  // practice is neither machine.
+  //
+  // This matters because the PDF is rendered locally and committed; the website's
+  // sync-resume workflow only copies the committed file. Whichever machine renders
+  // last decides the typeface that ships. Render on Windows for Segoe UI.
+  //
+  // Typst warns "unknown font family: segoe ui" on macOS. That is expected and
+  // harmless — it warns for every unmatched name in a fallback list even when a
+  // later entry matches.
+  //
+  // Avenir must be named exactly "Avenir". The installed faces are Light / Book /
+  // Roman / Medium / Heavy / Black, and Typst groups them into one family under
+  // that name, giving a real bold at 700 despite there being no face literally
+  // called Bold. "Avenir Book" is registered as a SEPARATE family that ignores
+  // `weight:` entirely — every weight renders identically — so it must not be
+  // named here.
   //
   // Caveat: Avenir's 300–600 faces sit close together, so `light`, `regular`, and
   // `medium` look nearly alike; only the bold contrast is strong. Fira Sans and
   // Source Sans 3 both have fuller ladders if that flatness becomes a problem.
-  font: ("Avenir", "Segoe UI", "Arial"),
+  font: ("Segoe UI", "Avenir", "Arial"),
   // Matched to the body font, rather than the Roboto default.
-  header-font: ("Avenir", "Segoe UI", "Arial"),
+  header-font: ("Segoe UI", "Avenir", "Arial"),
   colored-headers: true,
   show-address-icon: true,
   // `show-footer` now drives the date/page stamp at the FOOT OF THE SIDEBAR, not
@@ -418,9 +393,9 @@
 )
 
 #resume-item[
-  - Lead the Marketing Science and Analytics function for all client engagements, from proposal to design, data collection, analysis, and reporting, enabling the firm to achieve 40% revenue growth over 5 years.
+  - Lead the Marketing Science and Analytics function for all client engagements, from proposal to design, data collection, analysis, and reporting.
   - Apply econometric, statistical, and machine learning methods to derive consumer insights and inform marketing strategy for clients such as Amazon, Charter, Google, and T-Mobile, often in collaboration with academic experts, including Eric Bradlow (Wharton), Mike Hanssens (UCLA), and Sam Hui (UH).
-  - Develop and maintain R packages and AI skills to implement and extend core analytic methods in survey-based research: #link("https://github.com/dyavorsky/maxdiff")[`maxdiff`] adapts `bayesm`'s hierarchical Bayesian MNL for varying choice-set sizes; #link("https://github.com/dyavorsky/shapley")[`shapley`] extends R-squared contribution over all predictor orderings to logit and ordered logit outcomes; #link("https://github.com/dyavorsky/keydrivers")[`keydrivers`] adds bootstrapped confidence intervals across eight complementary importance methods; and #link("https://github.com/dyavorsky/turf")[`turf`] makes exhaustive bundle search tractable via C++ and parallel computation.
+  - Develop and maintain R packages and AI skills to implement and extend core analytic methods in survey-based research: #link("https://github.com/dyavorsky/maxdiff")[`maxdiff`] adapts `bayesm`'s hierarchical Bayesian MNL for varying choice-set sizes; #link("https://github.com/dyavorsky/shapley")[`shapley`] extends R-squared contribution over all predictor orderings to logit and ordered logit outcomes; #link("https://github.com/dyavorsky/keydrivers")[`keydrivers`] adds bootstrapped confidence intervals across eight complementary importance methods; and #link("https://github.com/dyavorsky/turf")[`turf`] makes exhaustive bundle search tractable via #box[C++] and parallel computation.
 ]
 
 #job-entry(
@@ -471,6 +446,7 @@
   - Developed and teach masters-level (MFE and MSBA) courses in econometrics, R programming, and marketing analytics, as well as undergraduate courses in customer analytics and tools for data science. 
   - Slides, syllabi, and student evaluations are available on my #link("https://dyavorsky.github.io/teaching")[`website`].
 ]
+
 
 
 

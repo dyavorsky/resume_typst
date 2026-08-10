@@ -52,21 +52,38 @@
   // body text. The contact icons are separate `#let` constants fixed at
   // rgb("#131A28") and stay near-black regardless.
   accent-color: rgb("#333333"),
-  // Avenir — a geometric sans, rounder and wider than the grotesques this template
-  // shipped with (Source Sans 3, then Fira Sans).
+  // Segoe UI preferred, Avenir as the fallback. Both are humanist/geometric sans
+  // faces, rounder and wider than the grotesques this template shipped with
+  // (Source Sans 3, then Fira Sans).
   //
-  // Must be named exactly "Avenir". The installed faces are Light / Book / Roman /
-  // Medium / Heavy / Black, and Typst groups them into one family under that name,
-  // giving a real bold at 700 despite there being no face literally called Bold.
-  // "Avenir Book" is registered as a SEPARATE family that ignores `weight:`
-  // entirely — every weight renders identically — so it must not be named here.
+  // These two are PLATFORM-SPLIT, and Typst picks per machine with no way to force
+  // the choice: Segoe UI is a Windows system font and is not on macOS (Office for
+  // Mac does not install it), while Avenir is a macOS system font absent from
+  // Windows. So a Windows render gets Segoe UI and a Mac render gets Avenir — the
+  // order here decides only which one wins where BOTH are present, which in
+  // practice is neither machine.
+  //
+  // This matters because the PDF is rendered locally and committed; the website's
+  // sync-resume workflow only copies the committed file. Whichever machine renders
+  // last decides the typeface that ships. Render on Windows for Segoe UI.
+  //
+  // Typst warns "unknown font family: segoe ui" on macOS. That is expected and
+  // harmless — it warns for every unmatched name in a fallback list even when a
+  // later entry matches.
+  //
+  // Avenir must be named exactly "Avenir". The installed faces are Light / Book /
+  // Roman / Medium / Heavy / Black, and Typst groups them into one family under
+  // that name, giving a real bold at 700 despite there being no face literally
+  // called Bold. "Avenir Book" is registered as a SEPARATE family that ignores
+  // `weight:` entirely — every weight renders identically — so it must not be
+  // named here.
   //
   // Caveat: Avenir's 300–600 faces sit close together, so `light`, `regular`, and
   // `medium` look nearly alike; only the bold contrast is strong. Fira Sans and
   // Source Sans 3 both have fuller ladders if that flatness becomes a problem.
-  font: ("Avenir", "Segoe UI", "Arial"),
+  font: ("Segoe UI", "Avenir", "Arial"),
   // Matched to the body font, rather than the Roboto default.
-  header-font: ("Avenir", "Segoe UI", "Arial"),
+  header-font: ("Segoe UI", "Avenir", "Arial"),
   colored-headers: true,
   show-address-icon: true,
   // `show-footer` now drives the date/page stamp at the FOOT OF THE SIDEBAR, not

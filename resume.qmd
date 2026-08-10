@@ -120,9 +120,9 @@ to adjust appearance; change the value in the template instead. See CLAUDE.md,
 )
 
 #resume-item[
-  - Lead the Marketing Science and Analytics function for all client engagements, from proposal to design, data collection, analysis, and reporting, enabling the firm to achieve 40% revenue growth over 5 years.
+  - Lead the Marketing Science and Analytics function for all client engagements, from proposal to design, data collection, analysis, and reporting.
   - Apply econometric, statistical, and machine learning methods to derive consumer insights and inform marketing strategy for clients such as Amazon, Charter, Google, and T-Mobile, often in collaboration with academic experts, including Eric Bradlow (Wharton), Mike Hanssens (UCLA), and Sam Hui (UH).
-  - Develop and maintain R packages and AI skills to implement and extend core analytic methods in survey-based research: #link("https://github.com/dyavorsky/maxdiff")[`maxdiff`] adapts `bayesm`'s hierarchical Bayesian MNL for varying choice-set sizes; #link("https://github.com/dyavorsky/shapley")[`shapley`] extends R-squared contribution over all predictor orderings to logit and ordered logit outcomes; #link("https://github.com/dyavorsky/keydrivers")[`keydrivers`] adds bootstrapped confidence intervals across eight complementary importance methods; and #link("https://github.com/dyavorsky/turf")[`turf`] makes exhaustive bundle search tractable via C++ and parallel computation.
+  - Develop and maintain R packages and AI skills to implement and extend core analytic methods in survey-based research: #link("https://github.com/dyavorsky/maxdiff")[`maxdiff`] adapts `bayesm`'s hierarchical Bayesian MNL for varying choice-set sizes; #link("https://github.com/dyavorsky/shapley")[`shapley`] extends R-squared contribution over all predictor orderings to logit and ordered logit outcomes; #link("https://github.com/dyavorsky/keydrivers")[`keydrivers`] adds bootstrapped confidence intervals across eight complementary importance methods; and #link("https://github.com/dyavorsky/turf")[`turf`] makes exhaustive bundle search tractable via #box[C++] and parallel computation.
 ]
 
 #job-entry(
