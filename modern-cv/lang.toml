@@ -2,7 +2,10 @@
 default-lang = "en"
 
 [lang.en]
-resume = "Résumé"
+# LOCAL EDIT: upstream ships "Résumé". Unaccented by preference -- this string
+# becomes the PDF /Title, which is what the browser's PDF viewer toolbar shows
+# when the resume is embedded in an iframe on the website.
+resume = "Resume"
 dear = "Dear"
 cover-letter = "Cover Letter"
 attached = "Attached"
