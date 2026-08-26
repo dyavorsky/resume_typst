@@ -362,8 +362,11 @@
       link("https://link.springer.com/content/pdf/10.1007/s11129-020-09229-4.pdf")[
         Consumer Search in the US Auto Industry (QME, 2020)
       ],
+      link("https://dyavorsky.github.io/sift_paper/")[
+        SIFT: Search Conjoint (in progress)
+      ],
       link("https://dyavorsky.github.io/likert_dualresponse/")[
-        Ordinal Dual Response in Choice-Based Conjoint (article, in progress)
+        Ordinal Dual Response in Choice-Based Conjoint (in progress)
       ],
       link("http://dcme-r.danyavorsky.com/")[
         Discrete Choice Model Estimation with R (book, in progress)
