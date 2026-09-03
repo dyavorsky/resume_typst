@@ -34,10 +34,15 @@ copy of this repo's `resume.pdf`, **synced automatically.** Rendering, committin
 pushing `resume.pdf` to `main` here is the entire publish step — nothing on the website
 needs updating by hand.
 
-It moved on 2026-09-03: `/cv/` used to *be* the resume, and is now a listing of two
-documents — this resume at `/cv/resume/`, and the academic CV (from
-[`dyavorsky/cv_typst`](https://github.com/dyavorsky/cv_typst)) at `/cv/vita/`. Old
-`/cv/` links still work; they land on the listing.
+It moved on 2026-09-03: `/cv/` used to *be* the resume. There are now two documents —
+this resume at `/cv/resume/`, and the academic CV (from
+[`dyavorsky/cv_typst`](https://github.com/dyavorsky/cv_typst)) at `/cv/vita/` — reached
+from a **Resume/CV dropdown** in the site navbar rather than a landing page.
+
+Old `/cv/` links still work: that URL redirects here, via an `aliases:` key in the
+resume page's front matter. So the URL printed on applications and linked from LinkedIn
+is safe, but it is a redirect rather than a page — worth knowing if the resume's path
+ever changes again, since the alias has to move with it.
 
 The machinery lives in the website repo:
 [`dyavorsky/quarto_website`](https://github.com/dyavorsky/quarto_website) →
