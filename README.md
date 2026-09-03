@@ -29,31 +29,37 @@ quarto render resume.qmd --to typst
 
 ## Publishing to danyavorsky.com
 
-The resume at [danyavorsky.com/cv](https://www.danyavorsky.com/cv/) is a copy of this
-repo's `resume.pdf`, **synced automatically.** Rendering, committing, and pushing
-`resume.pdf` to `main` here is the entire publish step — nothing on the website needs
-updating by hand.
+The resume at [danyavorsky.com/cv/resume](https://www.danyavorsky.com/cv/resume/) is a
+copy of this repo's `resume.pdf`, **synced automatically.** Rendering, committing, and
+pushing `resume.pdf` to `main` here is the entire publish step — nothing on the website
+needs updating by hand.
+
+It moved on 2026-09-03: `/cv/` used to *be* the resume, and is now a listing of two
+documents — this resume at `/cv/resume/`, and the academic CV (from
+[`dyavorsky/cv_typst`](https://github.com/dyavorsky/cv_typst)) at `/cv/vita/`. Old
+`/cv/` links still work; they land on the listing.
 
 The machinery lives in the website repo:
 [`dyavorsky/quarto_website`](https://github.com/dyavorsky/quarto_website) →
-`.github/workflows/sync-resume.yml`. It runs nightly at 03:12 PT, fetches
-`resume.pdf` from this repo's `main`, renames it to
-`cv/yavorsky_dan_resume_<yyyymmdd>.pdf`, updates the resume page's "Last updated" date,
-and redeploys the site. To skip the wait, I can always trigger it from that repo:
-**Actions → Sync resume from resume_typst → Run workflow**.
+`.github/workflows/sync-docs.yml` (was `sync-resume.yml`; it now handles both documents
+in one job). It runs nightly at 03:12 PT, fetches `resume.pdf` from this repo's `main`,
+renames it to `cv/resume/yavorsky_dan_resume_<yyyymmdd>.pdf`, updates the resume page's
+"Last updated" date, and redeploys the site. To skip the wait, I can always trigger it
+from that repo: **Actions → Sync resume and CV → Run workflow**.
 
 To update the website by hand:
 
 ```bash
 # 1. read the render date out of the PDF itself
-grep -ao '/CreationDate(D:[0-9]\{8\}' resume.pdf | head -1   # -> /CreationDate(D:20260729
+# whitespace class matters: Typst 0.15 writes `(D:`, 0.13 writes ` (D:`
+grep -aoE '/CreationDate[[:space:]]*\(D:[0-9]{8}' resume.pdf | head -1
 
 # 2. copy the new PDF to website directory with dated name; remove old one
-cp resume.pdf ../quarto_website/cv/yavorsky_dan_resume_20260729.pdf
+cp resume.pdf ../quarto_website/cv/resume/yavorsky_dan_resume_20260729.pdf
 cd ../quarto_website
-git rm cv/yavorsky_dan_resume_20260728.pdf
+git rm cv/resume/yavorsky_dan_resume_20260728.pdf
 
-# 3. update the two keys in quarto_website/cv/index.qmd that name it:
+# 3. update the two keys in quarto_website/cv/resume/index.qmd that name it:
 #      date: 2026-07-29
 #      cv:
 #        pdf: "yavorsky_dan_resume_20260729.pdf"
