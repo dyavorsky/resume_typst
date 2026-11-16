@@ -278,8 +278,7 @@
       ),
     ),
     positions: (
-      "Analytics at GBK Collective",
-      "Adjunct Professor at UCLA & UCSD",
+      "Assistant Professor of Marketing, SDSU Fowler",
     ),
   ),
   // Default is the `image` function itself, so this must be set explicitly.
@@ -428,19 +427,39 @@
 
   Train dogs, cycle, collect pocket knives, build mechanical keyboards, patinate boots, sip bourbon, lament ManUnited
 ]
+= Academic Appointment
+<academic-appointment>
+#job-entry(
+  organization: "SDSU, Fowler College of Business",
+  date: "2027 – Present",
+  title: "Assistant Professor of Marketing",
+  location: "San Diego, CA",
+)
+
+#job-entry(
+  organization: "UCLA Anderson & UCSD Rady",
+  date: "2021 – 2027",
+  title: "Adjunct Professor",
+  location: "Los Angeles & San Diego, CA",
+)
+
+#resume-item[
+  - Developed and teach masters-level (MFE and MSBA) courses in econometrics, R programming, and marketing analytics, as well as undergraduate courses in customer analytics and tools for data science. 
+  - Slides, syllabi, and student evaluations are available on my #link("https://dyavorsky.github.io/teaching")[`website`].
+]
 = Experience
 <experience>
 #job-entry(
   organization: "GBK Collective",
-  date: "2022 – Present",
+  date: "2022 – 2026",
   title: "Head of Analytics",
   location: "Los Angeles, CA",
 )
 
 #resume-item[
-  - Lead the Marketing Science and Analytics function for all client engagements, from proposal to design, data collection, analysis, and reporting.
-  - Apply econometric, statistical, and machine learning methods to derive consumer insights and inform marketing strategy for clients such as Amazon, Charter, Google, and T-Mobile, often in collaboration with academic experts, including Eric Bradlow (Wharton), Mike Hanssens (UCLA), and Sam Hui (UH).
-  - Develop and maintain R packages and AI skills to implement and extend core analytic methods in survey-based research: #link("https://github.com/dyavorsky/maxdiff")[`maxdiff`] adapts `bayesm`'s hierarchical Bayesian MNL for varying choice-set sizes; #link("https://github.com/dyavorsky/shapley")[`shapley`] extends R-squared contribution over all predictor orderings to logit and ordered logit outcomes; #link("https://github.com/dyavorsky/keydrivers")[`keydrivers`] adds bootstrapped confidence intervals across eight complementary importance methods; and #link("https://github.com/dyavorsky/turf")[`turf`] makes exhaustive bundle search tractable via #box[C++] and parallel computation.
+  - Led the Marketing Science and Analytics function for all client engagements, from proposal to design, data collection, analysis, and reporting.
+  - Applied econometric, statistical, and machine learning methods to inform marketing strategy for clients such as Amazon, Google, and T-Mobile, often with academic experts such as Eric Bradlow (Wharton) and Mike Hanssens (UCLA).
+  - Developed R packages for core survey-research methods: #link("https://github.com/dyavorsky/maxdiff")[`maxdiff`], #link("https://github.com/dyavorsky/shapley")[`shapley`], #link("https://github.com/dyavorsky/keydrivers")[`keydrivers`], and #link("https://github.com/dyavorsky/turf")[`turf`].
 ]
 
 #job-entry(
@@ -477,19 +496,6 @@
 #resume-item[
   - Performed economic, financial, statistical, and causal impact analyses to support professors engaged as expert witnesses in over 100 commercial litigation matters related to consumer fraud, bankruptcy, forensic accounting, asset pricing, and other matters.
   - Led substantial internal initiatives including firm-wide analyst training and West Coast analyst recruiting.
-]
-= Teaching
-<teaching>
-#job-entry(
-  organization: "UCLA Anderson & UCSD Rady",
-  date: "2021 – Present",
-  title: "Adjunct Professor",
-  location: "Los Angeles & San Diego, CA",
-)
-
-#resume-item[
-  - Developed and teach masters-level (MFE and MSBA) courses in econometrics, R programming, and marketing analytics, as well as undergraduate courses in customer analytics and tools for data science. 
-  - Slides, syllabi, and student evaluations are available on my #link("https://dyavorsky.github.io/teaching")[`website`].
 ]
 
 

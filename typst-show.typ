@@ -38,8 +38,7 @@
       ),
     ),
     positions: (
-      "Analytics at GBK Collective",
-      "Adjunct Professor at UCLA & UCSD",
+      "Assistant Professor of Marketing, SDSU Fowler",
     ),
   ),
   // Default is the `image` function itself, so this must be set explicitly.

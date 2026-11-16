@@ -42,7 +42,9 @@
 #let sidebar-width = 3.0in
 #let sidebar-gutter = 0.25in // white space between body text and the band edge
 #let sidebar-fill = rgb("#f2f2f2") // pagedown's --sidebar-background-color
-#let sidebar-inset = (left: 0.25in, right: 0.45in, top: 0.5in, bottom: 0.35in)
+// `top` matches the page's top margin in `resume()` so the first contact line
+// sits level with the name. Change the two together.
+#let sidebar-inset = (left: 0.25in, right: 0.45in, top: 0.65in, bottom: 0.35in)
 
 // Vertical gap between items WITHIN a sidebar section — between education
 // entries, and between publications. One constant so the two read as the same
@@ -656,8 +658,10 @@
     paper: paper-size,
     margin: (
       // LOCAL EDIT: upstream 15mm all round with a footer-dependent bottom.
-      //   * left/top 0.5in — puts the layout on an inch grid, which matters once
+      //   * left 0.5in — puts the layout on an inch grid, which matters once
       //     it is asymmetric, and gains 6.5pt of measure over 15mm.
+      //   * top 0.65in (was 0.5in) — the page had room to spare. Keep it equal to
+      //     `sidebar-inset.top` so the name and first contact line stay level.
       //   * right is DERIVED from the band. This margin is the only thing keeping
       //     body text out from under the sidebar, so it must never be hardcoded:
       //     change `sidebar-width` and the reservation follows.
@@ -665,7 +669,7 @@
       //     band — worth 20mm - 10mm = 28.35pt of recovered body height.
       left: 0.5in,
       right: sidebar-width + sidebar-gutter,
-      top: 0.5in,
+      top: 0.65in,
       bottom: 10mm,
     ),
     // LOCAL EDIT: the sidebar. Safe to add here — this is the document's only
@@ -767,6 +771,9 @@
         use-smallcaps,
       )
     ]
+    // LOCAL EDIT (addition): extra air between the positions line and the
+    // first section heading.
+    v(8pt)
   }
 
   // LOCAL EDIT: guarded on the key being present. Upstream emitted this block
